@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+
+  ## PHP-FPM Container ############
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+      dockerfile: Dockerfile
+    image: php-fpm
+    container_name: websocket-php-fpm
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - websocket-network
+    ports: 
+      - 9980:9980
+
+  ## NGINX Container #############
+  nginx:
+    image: nginx:1.19-alpine
+    container_name: websocket-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - websocket-network
+
+networks:
+  websocket-network:
+    driver: bridge
